@@ -38,6 +38,14 @@ def test_add_meal_to_battle(battle_model, sample_meal1):
     assert len(battle_model.combatants) == 1
     assert battle_model.combatants[0].meal == 'Meal 1'
 
+def test_add_meal_to_full_battle(battle_model, sample_battle):
+    """Test adding a meal to a full battle"""
+    battle_model.combatants.extend(sample_battle)
+
+    new_combatant = Meal(3, 'Meal 3', 'Cuisine 3', 300, 'HIGH')
+    with pytest.raises(ValueError, match="Combatant list is full, cannot add more combatants."):
+        battle_model.prep_combatant(new_combatant)
+
 def test_add_duplicate_meal_to_combatant_list(battle_model, sample_meal1):
     """Test error when adding a duplicate meal to the battle by ID."""
     battle_model.prep_combatant(sample_meal1)
@@ -63,7 +71,7 @@ def test_clear_meals(battle_model, sample_battle):
 
 def test_clear_combatants_empty_battle(battle_model):
     """Test clearing the entire combatants list when it's empty."""
-    assert len(battle_model.combatants) == 0, "Combatants should be empty before clearing"
+    assert len(battle_model.combatants) == 0, "Combatants should be empty before clearing" 
 
     # Call clear_combatants and verify no exceptions are raised and the list is still empty
     battle_model.clear_combatants()
@@ -102,14 +110,14 @@ def test_battle_with_insufficient_combatants(battle_model, sample_meal1):
     battle_model.prep_combatant(sample_meal1)
     assert len(battle_model.combatants) == 1
 
-    with pytest.raises(ValueError, match="Not enough combatants for a battle"):
+    with pytest.raises(ValueError, match="Two combatants must be prepped for a battle."):
         battle_model.battle()
 
 def test_battle_with_no_combatants(battle_model): # Might not be necessary since we are already checking for one
     """Test starting battle with no combatants"""
     assert len(battle_model.combatants) == 0
 
-    with pytest.raises(ValueError, match="Not enough combatants for a battle"):
+    with pytest.raises(ValueError, match="Two combatants must be prepped for a battle."):
         battle_model.battle()
 
 ##################################################
