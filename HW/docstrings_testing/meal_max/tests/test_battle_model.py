@@ -81,6 +81,11 @@ def test_get_battle_score(battle_model, sample_meal1):
     score = battle_model.get_battle_score(sample_meal1)
     assert score == expected_score
 
+def test_get_battle_score_with_none(battle_model):
+    """Test that get_battle_score raises an error if combatant is None."""
+    with pytest.raises(ValueError, match="Combatant cannot be None"):
+        battle_model.get_battle_score(None)
+
 ##################################################
 # Battle Execution Test Cases
 ##################################################
