@@ -102,7 +102,8 @@ def test_remove_meal_after_battle(battle_model, sample_battle):
     battle_model.combatants.extend(sample_battle)
     assert len(battle_model.combatants) == 2
 
-    battle_model.battle()
+    winner = battle_model.battle()
+    assert winner in ['Meal 1', 'Meal 2']
     assert len(battle_model.combatants) == 1, f"Expected 1 meal, but got {len(battle_model.combatants)}"
 
 def test_battle_with_insufficient_combatants(battle_model, sample_meal1):
