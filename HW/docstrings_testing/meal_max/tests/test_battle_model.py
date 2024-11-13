@@ -145,3 +145,10 @@ def test_get_combatants(battle_model, sample_battle):
     assert retrieved_combatants[1].cuisine == 'Cuisine 2'
     assert retrieved_combatants[1].price == 200
     assert retrieved_combatants[1].difficulty == 'MED'
+
+def test_get_combatants_empty(battle_model):
+    """Test retrieving combatants when the list is empty."""
+    # Ensure the combatants list is initially empty
+    testCombatants = battle_model.get_combatants()
+
+    assert testCombatants == [], "Expected empty list of combatants"
