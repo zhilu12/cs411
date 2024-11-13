@@ -146,13 +146,13 @@ def test_get_meal_by_name_success(mock_cursor):
 def test_get_meal_by_name_not_found(mock_cursor):
     """Test retrieving a non-existent meal by name raises ValueError."""
     mock_cursor.fetchone.return_value = None
-    with pytest.raises(ValueError, match="Meal with name 'Pizza' not found"):
+    with pytest.raises(ValueError, match="Meal with name Pizza not found"):
         get_meal_by_name("Pizza")
 
 def test_get_meal_by_name_deleted(mock_cursor):
     """Test retrieving a deleted meal by name raises ValueError."""
     mock_cursor.fetchone.return_value = (1, "Pasta", "Italian", 10.0, "MED", True)
-    with pytest.raises(ValueError, match="Meal with name 'Pasta' has been deleted"):
+    with pytest.raises(ValueError, match="Meal with name Pasta has been deleted"):
         get_meal_by_name("Pasta")
 
 ######################################################
