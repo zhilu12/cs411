@@ -53,15 +53,13 @@ check_db() {
 ##########################################################
 
 
-##########################################################
-#
-# Battle Management
-#
-##########################################################
+# Clearing all meals
+clear_all_meals() {
+  echo "Clearing the meals table"
+  curl -s -X DELETE "$BASE_URL/clear-meals" | grep -q '"status": "success"'
+}
 
 # Prepare a meal for battle
-
-# Define the function to add a meal
 create_meal() {
   meal=$1
   cuisine=$2
@@ -84,7 +82,59 @@ create_meal() {
   fi
 }
 
+delete_meal() {
+  meal_id=$1
 
+  echo "Deleting meal by ID ($meal_id)..."
+  response=$(curl -s -X DELETE "$BASE_URL/delete-meal/$meal_id")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Meal deleted successfully by ID ($meal_id)."
+  else
+    echo "Failed to delete meal by ID ($meal_id)."
+    exit 1
+  fi
+}
+
+retrieve_meal_by_id() {
+  meal_id=$1
+
+  echo "Getting meal by ID ($meal_id)..."
+  response=$(curl -s -X GET "$BASE_URL/get-meal-by-id/$meal_id")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Meal retrieved successfully by ID ($meal_id)."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Meal JSON (ID $meal_id):"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to get neal by ID ($meal_id)."
+    exit 1
+  fi
+}
+
+retrieve_meal_by_name() {
+  meal_name=$1
+
+  echo "Retrieving meal by name: $meal_name"
+  response=$(curl -s -X GET "$BASE_URL/get-meal-by-name/$meal_name")
+
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Meal retrieved successfully by name ($meal_name)."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Meal JSON (Name $meal_name):"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to retrieve meal by name ($meal_name)."
+    exit 1
+  fi
+}
+
+##########################################################
+#
+# Battle Management
+#
+##########################################################
 
 prep_combatant() {
   meal=$1
@@ -157,9 +207,20 @@ get_leaderboard() {
 check_health
 check_db
 
+# Clearing all meals
+clear_all_meals
+
 # Create and prepare meals for battle
 create_meal "Spaghetti" "Italian" 10.0 "LOW"
 create_meal "Tacos" "Mexican" 8.0 "MED"
+
+# Retrieve meals by ID and name
+retrieve_meal_by_id 1
+retrieve_meal_by_name "Spaghetti"
+
+# Deleting and readding
+delete_meal 1
+create_meal "Spaghetti" "Italian" 10.0 "LOW"
 
 # Prepare meals as combatants
 prep_combatant "Spaghetti"
